@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Ler notícia</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <header>
+    <h1>📰 BloxyFeed</h1>
+
+    <nav>
+      <a href="index.html">← Voltar</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <article class="noticia">
+
+      <!-- Manchete -->
+      <h2 id="titulo">Carregando...</h2>
+
+      <!-- Categoria, data e autor -->
+      <p id="meta"></p>
+
+      <!-- Botão de Compartilhar -->
+      <button
+        id="btn-compartilhar"
+        class="btn-share"
+        style="margin-bottom: 1.5rem;"
+      >
+        Compartilhar notícia
+      </button>
+
+      <!-- Imagem principal -->
+      <img
+        id="imagem"
+        alt=""
+        style="max-width: 100%; display: none;"
+      />
+
+      <!-- Resumo -->
+      <p id="resumo"></p>
+
+      <!-- Conteúdo completo da notícia -->
+      <div id="conteudo"></div>
+
+    </article>
+
+  </main>
+
+  <script src="noticia.js"></script>
+
+</body>
+</html>

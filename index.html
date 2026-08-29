@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <!-- Configurações Básicas -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📰 BloxyFeed | Início</title>
+  <meta name="description" content="Acompanhe as últimas notícias, destaques e novidades sobre Forsaken, Roblox e outros jogos no Portal." />  <!-- Favicon -->  <link rel="icon" type="image/svg+xml" href="https://i.postimg.cc/8z8dXDTC/Picsart-26-08-27-20-50-22-816.png" />
+  <link rel="alternate icon" href="https://i.postimg.cc/tR37dG7q/Picsart-26-08-29-03-16-48-097.jpg" />  <!-- Open Graph / Meta Tags para Redes Sociais e Banners -->  <meta property="og:type" content="website" />
+  <meta property="og:title" content="📰 BloxyFeed - O seu portal de notícias" />
+  <meta property="og:description" content="Acompanhe as notícias mais recentes sobre os seus jogos favoritos." />
+  <meta property="og:image" content="https://i.postimg.cc/tR37dG7q/Picsart-26-08-29-03-16-48-097.jpg" />
+  <meta property="og:site_name" content="BloxyFeed" />  <!-- Twitter Card -->  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="📰 BloxyFeed" />
+  <meta name="twitter:description" content="Notícias e novidades em tempo real." />
+  <meta name="twitter:image" content="https://i.postimg.cc/vZBBd1hm/Picsart-26-08-29-03-21-28-451.png" />  <!-- Estilos -->  <link rel="stylesheet" href="style.css" />
+</head><body>
+  <header>
+    <h1>📰 BloxyFeed</h1><nav>
+  <a href="index.html">Início</a>
+  <a href="#" data-categoria="Jogos">Jogos</a>
+  <a href="#" data-categoria="Roblox">Roblox</a>
+  <a href="#" data-categoria="Eventos">Eventos</a>
+  <a href="#" data-categoria="Polêmica">Polêmicas</a>
+  <a href="#" data-categoria="Tendências">Em alta</a>
+  <a href="#" data-categoria="Editores">Escolha do editor</a>
+</nav>
+
+  </header>  <main>
+    <section class="destaque">
+      <span>🔥 DESTAQUE</span>
+      <h2 id="destaqueTitulo">Carregando...</h2>
+      <p id="destaqueResumo"></p>  <button id="btnLerDestaque" disabled>
+    Ler notícia 🔥
+  </button>
+</section>
+
+<section>
+  <h2>Últimas notícias</h2>
+  
+  <div class="busca">
+  <input
+    type="search"
+    id="campoBusca"
+    placeholder="Buscar notícias..."
+    autocomplete="off"
+  />
+</div>
+
+  <!-- JS vai preencher aqui -->
+  <div id="listaNoticias"></div>
+</section>
+
+  </main>  <!-- Links úteis -->  <section class="links-uteis">
+    <h2>Links úteis</h2><div class="links-grid">
+  <div class="links-coluna">
+    <a href="https://caisdev.github.io/faq-bloxyfeed/">FAQ</a>
+    <a href="https://caisdev.github.io/support-bloxyfeed/">Suporte</a>
+    <a href="https://caisdev.github.io/bloxyfeed-termos/">Termos e Condições</a>
+  </div>
+</div>
+
+  </section>  <footer>
+    <p>© BloxyFeed</p>
+    <p>Powered by Notion and Google Scripts</p>
+    <p>Credits to Forsaken, Roblox and any other game.</p>
+  </footer>  <script src="script.js"></script></body>
+</html>
