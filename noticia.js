@@ -49,6 +49,37 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
     
     // Insere o conteúdo principal dos blocos do Notion
     conteudo.innerHTML = noticia.conteudo;
+    
+    const videos = conteudo.querySelectorAll("video");
+
+videos.forEach(video => {
+  try {
+    video.setAttribute("playsinline", "");
+
+    new Plyr(video, {
+      controls: [
+        "play-large",
+        "play",
+        "progress",
+        "current-time",
+        "mute",
+        "volume",
+        "settings",
+        "fullscreen"
+      ],
+      settings: ["speed"],
+      seekTime: 10,
+      clickToPlay: true,
+      hideControls: true
+    });
+  } catch (erroVideo) {
+    console.error("Erro ao inicializar o Plyr:", erroVideo);
+
+    // Se o Plyr não conseguir inicializar,
+    // mantém o player nativo do navegador funcionando.
+    video.controls = true;
+  }
+});
 
     // Se houver uma mídia vinculada diretamente via propriedade URL do Notion
     if (noticia.midiaUrl) {
@@ -69,10 +100,18 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
     document.title = `${noticia.titulo} | BloxyFeed`;
 
     imagem.style.display = noticia.imagem ? "block" : "none";
+
     if (noticia.imagem) {
-      imagem.src = noticia.imagem;
-      imagem.alt = noticia.titulo;
-    }
+  imagem.src = noticia.imagem;
+  imagem.alt = noticia.titulo;
+
+  const fundo = document.querySelector("#background-blur");
+
+  if (fundo) {
+    fundo.style.backgroundImage = `url("${noticia.imagem}")`;
+    fundo.style.opacity = "1";
+  }
+}
 
     if (compartilhar) {
       compartilhar.style.display = "inline-flex";
@@ -102,3 +141,35 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
     erro("Erro ao carregar notícia", "Verifique sua conexão ou a URL do backend.");
   }
 })();
+
+let ultimaRolagem = window.scrollY;
+let bloqueioScroll = false;
+
+window.addEventListener("scroll", () => {
+  if (bloqueioScroll) return;
+
+  bloqueioScroll = true;
+
+  requestAnimationFrame(() => {
+    const header = document.querySelector("header");
+    const rolagemAtual = window.scrollY;
+
+    if (!header) {
+      bloqueioScroll = false;
+      return;
+    }
+
+    if (rolagemAtual <= 10) {
+      header.classList.remove("header-hidden");
+    }
+    else if (rolagemAtual > ultimaRolagem) {
+      header.classList.add("header-hidden");
+    }
+    else if (rolagemAtual < ultimaRolagem) {
+      header.classList.remove("header-hidden");
+    }
+
+    ultimaRolagem = rolagemAtual;
+    bloqueioScroll = false;
+  });
+}, { passive: true });
