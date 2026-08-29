@@ -175,3 +175,70 @@ main{padding:1.25rem 1rem}
   box-shadow: var(--shadow-sm);
   animation: slideUp .35s ease both;
 }
+
+#background-blur {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  filter: blur(45px);
+  transform: scale(1.12);
+
+  opacity: 0;
+  transition: opacity .6s ease, background-image .6s ease;
+}
+
+#background-blur::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: rgba(15, 23, 42, .72);
+}
+
+header {
+  transition: transform .3s ease, box-shadow var(--transition), background-color var(--transition);
+}
+
+header.header-hidden {
+  transform: translateY(-100%);
+}
+
+:root {
+  --plyr-color-main: #2563eb;
+  --plyr-video-background: #000;
+}
+
+.plyr {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.plyr--video {
+  background: #000;
+}
+
+.plyr__control--overlaid {
+  background: #2563eb;
+}
+
+.plyr__control--overlaid:hover,
+.plyr__control--overlaid:focus {
+  background: #1d4ed8;
+}
+
+.plyr__controls {
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, .95),
+    rgba(15, 23, 42, .75)
+  );
+}
