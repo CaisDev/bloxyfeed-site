@@ -1,4 +1,4 @@
-const API_URL="https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec?path=news";
+const API_URL="https://script.google.com/macros/s/AKfycbzE5n7x4_S4MsmfgvZkz8PiGMsG1b1AQY9lNtg6b4Jhcb_wuMEmN4oXktK3Y7UYFJSyhA/exec?path=news";
 
 const nomeSite=document.querySelector("header h1");
 if(new Date().getMonth()===5)nomeSite.textContent="📰 BloxyFeed | Pride Month";
@@ -96,19 +96,55 @@ function renderizarLista(noticias){
   }
 }
 
-function configurarBusca(noticias){
-  const campoBusca=document.querySelector("#campoBusca");
-  if(!campoBusca)return;
+function distanciaLevenshtein(a, b) {
+  const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
 
-  campoBusca.addEventListener("input",()=>{
-    const termo=campoBusca.value.trim().toLowerCase();
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b[i - 1] === a[j - 1]) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
 
-    if(!termo){
+function palavraProxima(termo, texto) {
+  const palavrasTexto = texto.toLowerCase().split(/\s+/);
+  const termoLower = termo.toLowerCase();
+  const maxErros = termoLower.length <= 4 ? 1 : 2;
+
+  return palavrasTexto.some(palavra => {
+    if (palavra.includes(termoLower)) return true;
+    if (Math.abs(palavra.length - termoLower.length) > maxErros) return false;
+    return distanciaLevenshtein(termoLower, palavra) <= maxErros;
+  });
+}
+
+function configurarBusca(noticias) {
+  const campoBusca = document.querySelector("#campoBusca");
+  if (!campoBusca) return;
+
+  campoBusca.addEventListener("input", () => {
+    const termo = campoBusca.value.trim().toLowerCase();
+
+    if (!termo) {
       renderizarLista(noticias);
       return;
     }
 
-    const resultados=noticias.filter(noticia=>String(noticia.titulo).toLowerCase().includes(termo));
+    const resultados = noticias.filter(noticia => {
+      const textoBusca = `${noticia.titulo} ${noticia.resumo} ${noticia.categoria}`;
+      return palavraProxima(termo, textoBusca);
+    });
+
     renderizarLista(resultados);
   });
 }
@@ -131,3 +167,38 @@ async function iniciar(){
 }
 
 iniciar();
+
+let ultimaRolagem = window.scrollY;
+let bloqueioScroll = false;
+
+window.addEventListener("scroll", () => {
+  if (bloqueioScroll) return;
+
+  bloqueioScroll = true;
+
+  requestAnimationFrame(() => {
+    const header = document.querySelector("header");
+    const rolagemAtual = window.scrollY;
+
+    if (!header) {
+      bloqueioScroll = false;
+      return;
+    }
+
+    // No topo, o cabeçalho sempre aparece
+    if (rolagemAtual <= 10) {
+      header.classList.remove("header-hidden");
+    }
+    // Rolando para baixo
+    else if (rolagemAtual > ultimaRolagem) {
+      header.classList.add("header-hidden");
+    }
+    // Rolando para cima
+    else if (rolagemAtual < ultimaRolagem) {
+      header.classList.remove("header-hidden");
+    }
+
+    ultimaRolagem = rolagemAtual;
+    bloqueioScroll = false;
+  });
+}, { passive: true });
