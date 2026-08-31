@@ -178,8 +178,8 @@
 
   let currentUser = null;
 
-  // Função auxiliar para atualizar a interface
-  function renderUserUI(user) {
+  // Atualiza a interface
+  function showUserUI(user) {
     loadingSection.style.display = "none";
     if (user) {
       currentUser = user;
@@ -196,38 +196,43 @@
     }
   }
 
-  // 1. Inicia o login via redirecionamento
-  btnLogin.onclick = () => {
-    signInWithRedirect(auth, provider);
-  };
-
-  // 2. Faz logout e limpa a sessão
-  btnLogout.onclick = () => {
-    signOut(auth).then(() => renderUserUI(null));
-  };
-
-  // 3. Captura o resultado IMEDIATAMENTE após o retorno do Google
+  // 1. Processa a resposta do redirecionamento primeiro
   getRedirectResult(auth)
     .then((result) => {
       if (result && result.user) {
-        renderUserUI(result.user);
+        showUserUI(result.user);
       }
     })
-    .catch((err) => {
-      console.error("Erro no retorno de autenticação:", err);
-      alert("Erro ao autenticar: " + err.message);
+    .catch((error) => {
+      console.error("Erro no retorno do login:", error);
+      loadingSection.style.display = "none";
+      authSection.style.display = "block";
     });
 
-  // 4. Observador persistente (mantém o usuário logado ao recarregar a página)
+  // 2. Observa mudanças no estado de autenticação (persistência)
   onAuthStateChanged(auth, (user) => {
-    renderUserUI(user);
+    // Só atualiza a tela se o getRedirectResult já não tiver definido o usuário
+    if (user || !currentUser) {
+      showUserUI(user);
+    }
   });
 
-  // Envio do formulário
+  // Botões de Ação
+  btnLogin.onclick = () => {
+    loadingSection.style.display = "block";
+    authSection.style.display = "none";
+    signInWithRedirect(auth, provider);
+  };
+
+  btnLogout.onclick = () => {
+    signOut(auth).then(() => showUserUI(null));
+  };
+
+  // Envio do Formulário
   formNoticia.onsubmit = async (e) => {
     e.preventDefault();
 
-    if (!currentUser) return alert("Sua sessão expirou. Faça login novamente.");
+    if (!currentUser) return alert("Você precisa estar autenticado.");
 
     const btnEnviar = document.getElementById("btnEnviar");
     btnEnviar.disabled = true;
@@ -258,15 +263,15 @@
         throw new Error(result.error ? JSON.stringify(result.error) : "Erro desconhecido");
       }
     } catch (err) {
-      console.error("Erro na publicação:", err);
-      alert("Ocorreu um erro ao enviar a notícia.");
+      console.error(err);
+      alert("Falha ao publicar a notícia.");
     } finally {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Publicar Notícia 🚀";
     }
   };
 </script>
-
+  
 
 </body>
 </html>
