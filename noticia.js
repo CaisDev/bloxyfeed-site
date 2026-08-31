@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec?path=news";
+const API_URL = "https://script.google.com/macros/s/AKfycbzE5n7x4_S4MsmfgvZkz8PiGMsG1b1AQY9lNtg6b4Jhcb_wuMEmN4oXktK3Y7UYFJSyhA/exec?path=news";
 
 const $ = s => document.querySelector(s);
 const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString("pt-BR");
