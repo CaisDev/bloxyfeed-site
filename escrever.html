@@ -134,9 +134,15 @@
   <!-- Firebase SDK Modules -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    signInWithRedirect, 
+    getRedirectResult, 
+    signOut, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // Suas credenciais atualizadas:
   const firebaseConfig = {
     apiKey: "AIzaSyA3ymqYhh-2e4AwdehBi70oZ_-7TJeBU8k",
     authDomain: "autenticacao-f787f.firebaseapp.com",
@@ -151,7 +157,6 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // Substitua pela URL da sua implantação do Apps Script
   const API_URL = "https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec";
 
   const authSection = document.getElementById("authSection");
@@ -162,11 +167,17 @@
 
   let currentUser = null;
 
+  // Usa Redirecionamento em vez de Popup
   btnLogin.onclick = () => {
-    signInWithPopup(auth, provider).catch(err => alert("Erro ao fazer login: " + err.message));
+    signInWithRedirect(auth, provider);
   };
 
   btnLogout.onclick = () => signOut(auth);
+
+  // Captura o resultado do redirecionamento caso haja erro
+  getRedirectResult(auth).catch(err => {
+    console.error("Erro no retorno do login:", err);
+  });
 
   onAuthStateChanged(auth, user => {
     if (user) {
@@ -225,6 +236,5 @@
     }
   };
 </script>
-  
 </body>
 </html>
