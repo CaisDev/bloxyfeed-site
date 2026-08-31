@@ -12,7 +12,7 @@
       border-radius: var(--radius);
       padding: 2rem;
       max-width: 700px;
-      margin: 0 auto;
+      margin: 2rem auto;
       box-shadow: var(--shadow-md);
     }
     .form-group {
@@ -33,27 +33,29 @@
       color: var(--text-main);
       font-family: inherit;
       font-size: 0.95rem;
+      width: 100%;
     }
     .form-group textarea {
       resize: vertical;
-      min-height: 150px;
+      min-height: 140px;
     }
     .auth-box {
       text-align: center;
-      padding: 3rem 1.5rem;
+      padding: 2rem 1rem;
     }
     .user-info {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-bottom: 1.5rem;
-      padding: 0.75rem;
+      padding: 0.75rem 1rem;
       background: var(--bg-body);
       border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
     }
     .user-info img {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
     }
   </style>
@@ -62,36 +64,45 @@
   <header>
     <h1>📰 BloxyFeed</h1>
     <nav>
-      <a href="index.html">← Voltar</a>
+      <a href="index.html">← Voltar para o início</a>
     </nav>
   </header>
 
   <main>
     <div class="editor-container">
-      <!-- ÁREA DE LOGIN (Firebase) -->
-      <div id="authSection" class="auth-box">
-        <h2>Área Restrita a Autores</h2>
-        <p style="margin: 1rem 0; color: var(--text-muted);">Faça login com sua conta do Google para enviar sua matéria para o BloxyFeed.</p>
+      <!-- MENSAGEM DE CARREGAMENTO -->
+      <div id="loadingSection" style="text-align: center; padding: 2rem;">
+        <p>Verificando autenticação...</p>
+      </div>
+
+      <!-- SEÇÃO DE LOGIN -->
+      <div id="authSection" class="auth-box" style="display: none;">
+        <h2>Área de Autores</h2>
+        <p style="margin: 1rem 0; color: var(--text-muted);">
+          Faça login com sua conta do Google para enviar sua matéria.
+        </p>
         <button id="btnLogin" type="button">Entrar com Google</button>
       </div>
 
-      <!-- FORMULÁRIO DE NOTÍCIA -->
+      <!-- FORMULÁRIO DE PUBLICAÇÃO -->
       <div id="editorSection" style="display: none;">
         <div class="user-info">
-          <img id="userPhoto" src="" alt="Avatar" />
-          <div>
+          <img id="userPhoto" src="" alt="Foto de perfil" />
+          <div style="text-align: left;">
             <strong id="userName"></strong>
             <br>
             <small style="color: var(--text-muted);" id="userEmail"></small>
           </div>
-          <button id="btnLogout" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">Sair</button>
+          <button id="btnLogout" type="button" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+            Sair
+          </button>
         </div>
 
-        <h2>Criar Nova Notícia</h2>
+        <h2>✍️ Nova Notícia</h2>
         <form id="formNoticia" style="margin-top: 1.5rem;">
           <div class="form-group">
             <label for="titulo">Título da Notícia *</label>
-            <input type="text" id="titulo" required placeholder="Ex: Novo evento incrível no Roblox..." />
+            <input type="text" id="titulo" required placeholder="Digite o título principal..." />
           </div>
 
           <div class="form-group">
@@ -108,17 +119,17 @@
 
           <div class="form-group">
             <label for="imagemUrl">URL da Imagem de Capa</label>
-            <input type="url" id="imagemUrl" placeholder="https://exemplo.com/imagem.jpg" />
+            <input type="url" id="imagemUrl" placeholder="https://i.postimg.cc/..." />
           </div>
 
           <div class="form-group">
             <label for="resumo">Resumo / Subtítulo *</label>
-            <textarea id="resumo" rows="2" required placeholder="Uma breve sinopse do que trata essa notícia..."></textarea>
+            <textarea id="resumo" rows="2" required placeholder="Um breve resumo para aparecer nos cards..."></textarea>
           </div>
 
           <div class="form-group">
             <label for="conteudo">Conteúdo da Notícia *</label>
-            <textarea id="conteudo" rows="8" required placeholder="Escreva o texto completo aqui. Pule duas linhas para separar parágrafos."></textarea>
+            <textarea id="conteudo" rows="8" required placeholder="Escreva o texto completo da notícia. Pule duas linhas para criar novos parágrafos."></textarea>
           </div>
 
           <button type="submit" id="btnEnviar" style="width: 100%;">Publicar Notícia 🚀</button>
@@ -128,10 +139,9 @@
   </main>
 
   <footer>
-    <p>© BloxyFeed - Portal de Notícias</p>
+    <p>© BloxyFeed</p>
   </footer>
 
-  <!-- Firebase SDK Modules -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -159,6 +169,7 @@
 
   const API_URL = "https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec";
 
+  const loadingSection = document.getElementById("loadingSection");
   const authSection = document.getElementById("authSection");
   const editorSection = document.getElementById("editorSection");
   const btnLogin = document.getElementById("btnLogin");
@@ -167,19 +178,9 @@
 
   let currentUser = null;
 
-  // Usa Redirecionamento em vez de Popup
-  btnLogin.onclick = () => {
-    signInWithRedirect(auth, provider);
-  };
-
-  btnLogout.onclick = () => signOut(auth);
-
-  // Captura o resultado do redirecionamento caso haja erro
-  getRedirectResult(auth).catch(err => {
-    console.error("Erro no retorno do login:", err);
-  });
-
-  onAuthStateChanged(auth, user => {
+  // Função auxiliar para atualizar a interface
+  function renderUserUI(user) {
+    loadingSection.style.display = "none";
     if (user) {
       currentUser = user;
       document.getElementById("userName").textContent = user.displayName || "Autor";
@@ -193,12 +194,40 @@
       authSection.style.display = "block";
       editorSection.style.display = "none";
     }
+  }
+
+  // 1. Inicia o login via redirecionamento
+  btnLogin.onclick = () => {
+    signInWithRedirect(auth, provider);
+  };
+
+  // 2. Faz logout e limpa a sessão
+  btnLogout.onclick = () => {
+    signOut(auth).then(() => renderUserUI(null));
+  };
+
+  // 3. Captura o resultado IMEDIATAMENTE após o retorno do Google
+  getRedirectResult(auth)
+    .then((result) => {
+      if (result && result.user) {
+        renderUserUI(result.user);
+      }
+    })
+    .catch((err) => {
+      console.error("Erro no retorno de autenticação:", err);
+      alert("Erro ao autenticar: " + err.message);
+    });
+
+  // 4. Observador persistente (mantém o usuário logado ao recarregar a página)
+  onAuthStateChanged(auth, (user) => {
+    renderUserUI(user);
   });
 
+  // Envio do formulário
   formNoticia.onsubmit = async (e) => {
     e.preventDefault();
 
-    if (!currentUser) return alert("Você precisa estar autenticado.");
+    if (!currentUser) return alert("Sua sessão expirou. Faça login novamente.");
 
     const btnEnviar = document.getElementById("btnEnviar");
     btnEnviar.disabled = true;
@@ -216,6 +245,7 @@
     try {
       const res = await fetch(API_URL, {
         method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       });
 
@@ -225,16 +255,18 @@
         alert("Notícia publicada com sucesso!");
         window.location.href = "index.html";
       } else {
-        throw new Error(JSON.stringify(result.error));
+        throw new Error(result.error ? JSON.stringify(result.error) : "Erro desconhecido");
       }
     } catch (err) {
-      console.error(err);
-      alert("Falha ao publicar a notícia. Tente novamente.");
+      console.error("Erro na publicação:", err);
+      alert("Ocorreu um erro ao enviar a notícia.");
     } finally {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Publicar Notícia 🚀";
     }
   };
 </script>
+
+
 </body>
 </html>
