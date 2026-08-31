@@ -17,14 +17,10 @@
       --radius-sm: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-body);
       color: var(--text-main);
       line-height: 1.5;
@@ -39,15 +35,8 @@
       align-items: center;
     }
 
-    header h1 {
-      font-size: 1.5rem;
-    }
-
-    header a {
-      color: var(--primary);
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
+    header h1 { font-size: 1.5rem; }
+    header a { color: var(--primary); text-decoration: none; font-size: 0.9rem; }
 
     .editor-container {
       background: var(--bg-card);
@@ -56,7 +45,6 @@
       padding: 1.5rem;
       max-width: 700px;
       margin: 1rem auto;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     .form-group {
@@ -66,28 +54,19 @@
       gap: 0.5rem;
     }
 
-    .form-group label {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
+    .form-group label { font-weight: 600; font-size: 0.9rem; }
 
-    .form-group input, 
-    .form-group select, 
-    .form-group textarea {
+    .form-group input, .form-group select, .form-group textarea {
       padding: 0.75rem 1rem;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       background: var(--bg-body);
       color: var(--text-main);
-      font-family: inherit;
       font-size: 0.95rem;
       width: 100%;
     }
 
-    .form-group textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
 
     button {
       background: var(--primary);
@@ -98,22 +77,12 @@
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    button:hover {
-      background: var(--primary-hover);
-    }
+    button:hover { background: var(--primary-hover); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .auth-box {
-      text-align: center;
-      padding: 2rem 1rem;
-    }
+    .auth-box { text-align: center; padding: 2rem 1rem; }
 
     .user-info {
       display: flex;
@@ -126,68 +95,44 @@
       border: 1px solid var(--border-color);
     }
 
-    .user-info img {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
+    .user-info img { width: 42px; height: 42px; border-radius: 50%; }
+    footer { text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.85rem; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>📰 BloxyFeed</h1>
-    <nav>
-      <a href="index.html">← Voltar para o início</a>
-    </nav>
+    <nav><a href="index.html">← Voltar para o início</a></nav>
   </header>
 
   <main>
     <div class="editor-container">
-      
-      <!-- SEÇÃO 1: CARREGANDO -->
       <div id="loadingSection" style="text-align: center; padding: 2rem;">
         <p style="color: var(--text-muted);">Verificando autenticação...</p>
       </div>
 
-      <!-- SEÇÃO 2: TELA DE LOGIN -->
       <div id="authSection" class="auth-box" style="display: none;">
         <h2>🔒 Área de Autores</h2>
-        <p style="margin: 1rem 0; color: var(--text-muted);">
-          Faça login com sua conta do Google para publicar matérias no site.
-        </p>
+        <p style="margin: 1rem 0; color: var(--text-muted);">Faça login com sua conta do Google para publicar matérias.</p>
         <button id="btnLogin" type="button">Entrar com Google</button>
       </div>
 
-      <!-- SEÇÃO 3: FORMULÁRIO DE PUBLICAÇÃO -->
       <div id="editorSection" style="display: none;">
-        
         <div class="user-info">
-          <img id="userPhoto" src="https://via.placeholder.com/40" alt="Foto de perfil" />
-          <div style="text-align: left;">
-            <strong id="userName">Autor</strong>
-            <br>
+          <img id="userPhoto" src="https://via.placeholder.com/40" alt="Foto" />
+          <div>
+            <strong id="userName">Autor</strong><br>
             <small style="color: var(--text-muted);" id="userEmail">email@exemplo.com</small>
           </div>
-          <button id="btnLogout" type="button" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #ef4444;">
-            Sair
-          </button>
+          <button id="btnLogout" type="button" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; background: #ef4444;">Sair</button>
         </div>
 
         <h2>✍️ Nova Notícia</h2>
-        
         <form id="formNoticia" style="margin-top: 1.5rem;">
-          
           <div class="form-group">
-            <label for="titulo">Título da Notícia *</label>
-            <input type="text" id="titulo" required placeholder="Digite o título principal..." />
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" required placeholder="Digite o título..." />
           </div>
 
           <div class="form-group">
@@ -204,43 +149,31 @@
 
           <div class="form-group">
             <label for="imagemUrl">URL da Imagem de Capa</label>
-            <input type="url" id="imagemUrl" placeholder="https://i.postimg.cc/..." />
+            <input type="url" id="imagemUrl" placeholder="https://..." />
           </div>
 
           <div class="form-group">
-            <label for="resumo">Resumo / Subtítulo *</label>
-            <textarea id="resumo" rows="2" required placeholder="Breve resumo para os cards..."></textarea>
+            <label for="resumo">Resumo *</label>
+            <textarea id="resumo" rows="2" required placeholder="Resumo para os cards..."></textarea>
           </div>
 
           <div class="form-group">
-            <label for="conteudo">Conteúdo da Notícia *</label>
-            <textarea id="conteudo" rows="8" required placeholder="Texto completo da notícia. Pule duas linhas para novos parágrafos."></textarea>
+            <label for="conteudo">Conteúdo *</label>
+            <textarea id="conteudo" rows="8" required placeholder="Texto da notícia..."></textarea>
           </div>
 
           <button type="submit" id="btnEnviar" style="width: 100%;">Publicar Notícia 🚀</button>
-        
         </form>
       </div>
-
     </div>
   </main>
 
-  <footer>
-    <p>© BloxyFeed</p>
-  </footer>
+  <footer><p>© BloxyFeed</p></footer>
 
-  <!-- SCRIPT FIREBASE + LÓGICA DA PÁGINA -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getAuth, 
-      GoogleAuthProvider, 
-      signInWithPopup, 
-      signOut, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Suas credenciais do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA3ymqYhh-2e4AwdehBi70oZ_-7TJeBU8k",
       authDomain: "autenticacao-f787f.firebaseapp.com",
@@ -255,10 +188,9 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Nova URL da sua API no Google Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbxE5n7x4_S4MsmfgvZkz8PiGMsG1b1AQY9lNtg6b4Jhcb_wuMEmN4oXktK3Y7UYFJSyhA/exec";
+    // URL atualizada da sua API no Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbw5rPfaxMkkS5PAYn536jHydt7_mtZp0uxx8m2cyg7pW_f7PTBnFDEAYQW8D_Vwmwl94A/exec";
 
-    // Elementos da Tela
     const loadingSection = document.getElementById("loadingSection");
     const authSection = document.getElementById("authSection");
     const editorSection = document.getElementById("editorSection");
@@ -268,7 +200,6 @@
 
     let currentUser = null;
 
-    // Função para alterar as telas visíveis no DOM
     function updateUI(user) {
       loadingSection.style.display = "none";
       if (user) {
@@ -276,7 +207,6 @@
         document.getElementById("userName").textContent = user.displayName || "Autor";
         document.getElementById("userEmail").textContent = user.email;
         document.getElementById("userPhoto").src = user.photoURL || "https://via.placeholder.com/40";
-        
         authSection.style.display = "none";
         editorSection.style.display = "block";
       } else {
@@ -286,45 +216,34 @@
       }
     }
 
-    // Monitora persistentemente se o usuário já está logado
-    onAuthStateChanged(auth, (user) => {
-      updateUI(user);
-    });
+    onAuthStateChanged(auth, (user) => updateUI(user));
 
-    // Fallback de segurança para não travar a tela
     setTimeout(() => {
-      if (loadingSection.style.display !== "none") {
-        updateUI(auth.currentUser);
-      }
+      if (loadingSection.style.display !== "none") updateUI(auth.currentUser);
     }, 2500);
 
-    // Clique para entrar via Popup
     btnLogin.onclick = async () => {
       try {
         btnLogin.disabled = true;
-        btnLogin.textContent = "Aguardando login...";
+        btnLogin.textContent = "Aguardando...";
         const result = await signInWithPopup(auth, provider);
         updateUI(result.user);
       } catch (error) {
-        console.error("Erro no Popup:", error);
-        alert("Erro ao entrar: " + error.message);
+        alert("Erro no login: " + error.message);
       } finally {
         btnLogin.disabled = false;
         btnLogin.textContent = "Entrar com Google";
       }
     };
 
-    // Clique para sair
     btnLogout.onclick = async () => {
       await signOut(auth);
       updateUI(null);
     };
 
-    // Envio do formulário
     formNoticia.onsubmit = async (e) => {
       e.preventDefault();
-
-      if (!currentUser) return alert("Sua sessão expirou. Faça login novamente.");
+      if (!currentUser) return alert("Sua sessão expirou.");
 
       const btnEnviar = document.getElementById("btnEnviar");
       btnEnviar.disabled = true;
@@ -343,18 +262,14 @@
         await fetch(API_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain"
-          },
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload)
         });
 
         alert("Notícia enviada com sucesso! 🚀");
         window.location.href = "index.html";
-
       } catch (err) {
-        console.error("Erro no envio:", err);
-        alert("Falha ao enviar notícia. Verifique sua conexão.");
+        alert("Falha ao enviar notícia.");
       } finally {
         btnEnviar.disabled = false;
         btnEnviar.textContent = "Publicar Notícia 🚀";
