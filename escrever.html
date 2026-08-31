@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escrever Notícia | BloxyFeed</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .editor-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-md);
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+    .auth-box {
+      text-align: center;
+      padding: 3rem 1.5rem;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem;
+      background: var(--bg-body);
+      border-radius: var(--radius-sm);
+    }
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📰 BloxyFeed</h1>
+    <nav>
+      <a href="index.html">← Voltar</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="editor-container">
+      <!-- ÁREA DE LOGIN (Firebase) -->
+      <div id="authSection" class="auth-box">
+        <h2>Área Restrita a Autores</h2>
+        <p style="margin: 1rem 0; color: var(--text-muted);">Faça login com sua conta do Google para enviar sua matéria para o BloxyFeed.</p>
+        <button id="btnLogin" type="button">Entrar com Google</button>
+      </div>
+
+      <!-- FORMULÁRIO DE NOTÍCIA -->
+      <div id="editorSection" style="display: none;">
+        <div class="user-info">
+          <img id="userPhoto" src="" alt="Avatar" />
+          <div>
+            <strong id="userName"></strong>
+            <br>
+            <small style="color: var(--text-muted);" id="userEmail"></small>
+          </div>
+          <button id="btnLogout" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">Sair</button>
+        </div>
+
+        <h2>Criar Nova Notícia</h2>
+        <form id="formNoticia" style="margin-top: 1.5rem;">
+          <div class="form-group">
+            <label for="titulo">Título da Notícia *</label>
+            <input type="text" id="titulo" required placeholder="Ex: Novo evento incrível no Roblox..." />
+          </div>
+
+          <div class="form-group">
+            <label for="categoria">Categoria *</label>
+            <select id="categoria" required>
+              <option value="Jogos">Jogos</option>
+              <option value="Roblox">Roblox</option>
+              <option value="Eventos">Eventos</option>
+              <option value="Polêmica">Polêmica</option>
+              <option value="Tendências">Tendências</option>
+              <option value="Editores">Escolha do editor</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="imagemUrl">URL da Imagem de Capa</label>
+            <input type="url" id="imagemUrl" placeholder="https://exemplo.com/imagem.jpg" />
+          </div>
+
+          <div class="form-group">
+            <label for="resumo">Resumo / Subtítulo *</label>
+            <textarea id="resumo" rows="2" required placeholder="Uma breve sinopse do que trata essa notícia..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="conteudo">Conteúdo da Notícia *</label>
+            <textarea id="conteudo" rows="8" required placeholder="Escreva o texto completo aqui. Pule duas linhas para separar parágrafos."></textarea>
+          </div>
+
+          <button type="submit" id="btnEnviar" style="width: 100%;">Publicar Notícia 🚀</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© BloxyFeed - Portal de Notícias</p>
+  </footer>
+
+  <!-- Firebase SDK Modules -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // Suas credenciais atualizadas:
+  const firebaseConfig = {
+    apiKey: "AIzaSyA3ymqYhh-2e4AwdehBi70oZ_-7TJeBU8k",
+    authDomain: "autenticacao-f787f.firebaseapp.com",
+    projectId: "autenticacao-f787f",
+    storageBucket: "autenticacao-f787f.firebasestorage.app",
+    messagingSenderId: "505467588693",
+    appId: "1:505467588693:web:436509baaea84c566c44dc",
+    measurementId: "G-H5NQ57NEZ0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Substitua pela URL da sua implantação do Apps Script
+  const API_URL = "https://script.google.com/macros/s/AKfycbxSplq_s5tCcyfsUv0VMYoHnfl7zgdIvNn2CAZ4FjhLOMuUEIBcbXos-e1SLOQgk6klEg/exec";
+
+  const authSection = document.getElementById("authSection");
+  const editorSection = document.getElementById("editorSection");
+  const btnLogin = document.getElementById("btnLogin");
+  const btnLogout = document.getElementById("btnLogout");
+  const formNoticia = document.getElementById("formNoticia");
+
+  let currentUser = null;
+
+  btnLogin.onclick = () => {
+    signInWithPopup(auth, provider).catch(err => alert("Erro ao fazer login: " + err.message));
+  };
+
+  btnLogout.onclick = () => signOut(auth);
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById("userName").textContent = user.displayName || "Autor";
+      document.getElementById("userEmail").textContent = user.email;
+      document.getElementById("userPhoto").src = user.photoURL || "https://via.placeholder.com/40";
+      
+      authSection.style.display = "none";
+      editorSection.style.display = "block";
+    } else {
+      currentUser = null;
+      authSection.style.display = "block";
+      editorSection.style.display = "none";
+    }
+  });
+
+  formNoticia.onsubmit = async (e) => {
+    e.preventDefault();
+
+    if (!currentUser) return alert("Você precisa estar autenticado.");
+
+    const btnEnviar = document.getElementById("btnEnviar");
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = "Publicando...";
+
+    const payload = {
+      titulo: document.getElementById("titulo").value,
+      categoria: document.getElementById("categoria").value,
+      imagemUrl: document.getElementById("imagemUrl").value,
+      resumo: document.getElementById("resumo").value,
+      conteudo: document.getElementById("conteudo").value,
+      autor: currentUser.displayName || currentUser.email
+    };
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert("Notícia publicada com sucesso!");
+        window.location.href = "index.html";
+      } else {
+        throw new Error(JSON.stringify(result.error));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Falha ao publicar a notícia. Tente novamente.");
+    } finally {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Publicar Notícia 🚀";
+    }
+  };
+</script>
+  
+</body>
+</html>
