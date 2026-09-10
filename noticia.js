@@ -5,8 +5,8 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
 
 (async () => {
   const id = new URLSearchParams(location.search).get("id");
-  const [titulo, meta, imagem, resumo, conteudo, compartilhar] =
-    ["#titulo", "#meta", "#imagem", "#resumo", "#conteudo", "#btn-compartilhar"].map($);
+  const [titulo, meta, imagem, resumo, conteudo, compartilhar, baixar] =
+    ["#titulo", "#meta", "#imagem", "#resumo", "#conteudo", "#btn-compartilhar", "#btn-baixar"].map($);
 
   const erro = (t, r) => {
     titulo.textContent = t;
@@ -14,9 +14,11 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
     resumo.textContent = r;
     conteudo.innerHTML = "";
     if (compartilhar) compartilhar.style.display = "none";
+    if (baixar) baixar.style.display = "none";
   };
 
   if (compartilhar) compartilhar.style.display = "none";
+  if (baixar) baixar.style.display = "none";
 
   if (!id)
     return erro("Notícia não encontrada", "Nenhum ID de notícia foi informado na URL.");
@@ -52,34 +54,31 @@ const data = d => isNaN(new Date(d)) ? d || "" : new Date(d).toLocaleDateString(
     
     const videos = conteudo.querySelectorAll("video");
 
-videos.forEach(video => {
-  try {
-    video.setAttribute("playsinline", "");
+    videos.forEach(video => {
+      try {
+        video.setAttribute("playsinline", "");
 
-    new Plyr(video, {
-      controls: [
-        "play-large",
-        "play",
-        "progress",
-        "current-time",
-        "mute",
-        "volume",
-        "settings",
-        "fullscreen"
-      ],
-      settings: ["speed"],
-      seekTime: 10,
-      clickToPlay: true,
-      hideControls: true
+        new Plyr(video, {
+          controls: [
+            "play-large",
+            "play",
+            "progress",
+            "current-time",
+            "mute",
+            "volume",
+            "settings",
+            "fullscreen"
+          ],
+          settings: ["speed"],
+          seekTime: 10,
+          clickToPlay: true,
+          hideControls: true
+        });
+      } catch (erroVideo) {
+        console.error("Erro ao inicializar o Plyr:", erroVideo);
+        video.controls = true;
+      }
     });
-  } catch (erroVideo) {
-    console.error("Erro ao inicializar o Plyr:", erroVideo);
-
-    // Se o Plyr não conseguir inicializar,
-    // mantém o player nativo do navegador funcionando.
-    video.controls = true;
-  }
-});
 
     // Se houver uma mídia vinculada diretamente via propriedade URL do Notion
     if (noticia.midiaUrl) {
@@ -102,16 +101,16 @@ videos.forEach(video => {
     imagem.style.display = noticia.imagem ? "block" : "none";
 
     if (noticia.imagem) {
-  imagem.src = noticia.imagem;
-  imagem.alt = noticia.titulo;
+      imagem.src = noticia.imagem;
+      imagem.alt = noticia.titulo;
 
-  const fundo = document.querySelector("#background-blur");
+      const fundo = document.querySelector("#background-blur");
 
-  if (fundo) {
-    fundo.style.backgroundImage = `url("${noticia.imagem}")`;
-    fundo.style.opacity = "1";
-  }
-}
+      if (fundo) {
+        fundo.style.backgroundImage = `url("${noticia.imagem}")`;
+        fundo.style.opacity = "1";
+      }
+    }
 
     if (compartilhar) {
       compartilhar.style.display = "inline-flex";
@@ -136,6 +135,46 @@ videos.forEach(video => {
         }
       };
     }
+
+    // Configuração do botão de Baixar Notícia em .txt
+    if (baixar) {
+      baixar.style.display = "inline-flex";
+      baixar.onclick = () => {
+        // Converte o HTML do conteúdo em texto puro formatado
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = noticia.conteudo;
+        const textoConteudo = tempDiv.innerText || tempDiv.textContent || "";
+
+        // Monta o texto do arquivo TXT
+        const textoTXT = `${noticia.titulo.toUpperCase()}\n` +
+          `Categoria: ${noticia.categoria}\n` +
+          `Data: ${noticia.data}\n` +
+          `Autor: ${noticia.autor}\n` +
+          `Fonte: BloxyFeed (${location.href})\n` +
+          `${"=".repeat(40)}\n\n` +
+          (noticia.resumo ? `RESUMO:\n${noticia.resumo}\n\n${"=".repeat(40)}\n\n` : "") +
+          `${textoConteudo.trim()}\n\n` +
+          `${"=".repeat(40)}\n` +
+          `Notícia baixada de BloxyFeed`;
+
+        // Limpa caracteres inválidos no título para criar o nome do arquivo
+        const nomeArquivoClean = noticia.titulo
+          .replace(/[\\/:*?"<>|]/g, "")
+          .trim();
+
+        // Cria o blob e aciona o download
+        const blob = new Blob([textoTXT], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${nomeArquivoClean || "noticia"}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+    }
+
   } catch (e) {
     console.error(e);
     erro("Erro ao carregar notícia", "Verifique sua conexão ou a URL do backend.");
